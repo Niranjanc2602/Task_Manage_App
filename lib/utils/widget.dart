@@ -27,7 +27,7 @@ Widget ListDisplayWidget(BuildContext context, List<WorkItemData> workItemDataLi
                 margin: EdgeInsets.all(8.0),
                 child: ListTile(
                   title: Text(workItem.name),
-                  subtitle: Text(workItem.description!),
+                  subtitle: Text(workItem.description),
                   onTap: () {
                     if (workItem.type == "EPIC"){
                       Epic? epic = workItem.toEpic();

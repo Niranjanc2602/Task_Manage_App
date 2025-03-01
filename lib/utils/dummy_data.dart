@@ -2,7 +2,7 @@ import 'package:sqflite_test/constants/Status.dart';
 
 import 'package:sqflite_test/models/Epic.dart';
 import '../models/UserStory.dart';
-import '../models/Task.dart';
+import 'package:sqflite_test/models/Task.dart';
 
 class DummyData {
   static List<Epic> getDummyEpics() {

@@ -25,6 +25,7 @@ class Task{
       description: this.description!,
       status: this.status,
       EpicId: this.EpicId,
+      UserStoryId: this.UserStoryId,
       type: "TASK"
     );
   }

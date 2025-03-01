@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/Task.dart';
+import 'package:sqflite_test/models/Task.dart';
 import '../utils/dummy_data.dart';
-import 'add_task_screen.dart';
-import 'task_detail_screen.dart';
+import 'package:sqflite_test/screens/task_detail_screen.dart';
+
 
 class TaskListScreen extends StatefulWidget {
   final int userStoryId;

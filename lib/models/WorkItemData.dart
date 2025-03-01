@@ -34,10 +34,10 @@ class WorkItemData {
   }
 
   UserStory toUserStory(){
-    return UserStory(Id: this.id, name: this.name, description: this.description, EpiId: this.EpicId, status: this.status, priority: this.priority);
+    return UserStory(Id: this.id, name: this.name, description: this.description, EpiId: this.EpicId, status: this.status, priority: 0);
   }
 
   Task toTask(){
-    return Task(Id: this.id, name: this.name, description: this.description, EpicId: this.EpicId, UserStoryId: this.UserStoryId!, status: this.status, priority: this.priority!);
+    return Task(Id: this.id, name: this.name, description: this.description, EpicId: this.EpicId, UserStoryId: this.UserStoryId!, status: this.status, priority: 0);
   }
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_test/constants/Status.dart';
 import 'package:sqflite_test/models/WorkItemData.dart';
-import 'package:sqflite_test/screens/user_story_list_screen.dart';
 import 'package:sqflite_test/models/Epic.dart';
 import 'package:sqflite_test/utils/widget.dart';
 import 'add_epic_screen.dart';
-import 'epic_detail_screen.dart';
 import '../utils/dummy_data.dart'; // Import the dummy data
 
 class EpicListScreen extends StatefulWidget {

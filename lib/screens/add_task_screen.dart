@@ -5,8 +5,9 @@ import 'package:sqflite_test/constants/Status.dart';
 
 class AddTaskScreen extends StatefulWidget {
   final int userStoryId;
+  final int epicId;
 
-  AddTaskScreen({required this.userStoryId});
+  AddTaskScreen({required this.userStoryId, required this.epicId});
 
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
@@ -29,7 +30,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       final task = Task(
         name: _nameController.text,
         description: _descriptionController.text,
-        status: Status.todo, EpicId: 0, UserStoryId: widget.userStoryId, priority: 0
+        status: Status.todo, EpicId: widget.epicId, UserStoryId: widget.userStoryId, priority: 0
       );
       Navigator.pop(context, task);
     }

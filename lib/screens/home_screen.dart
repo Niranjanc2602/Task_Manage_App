@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
-            label: 'All Epics',
+            label: 'Epics',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.task),
