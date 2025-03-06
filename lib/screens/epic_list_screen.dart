@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_test/constants/Status.dart';
+import 'package:sqflite_test/dao/Epic_dao.dart';
 import 'package:sqflite_test/models/WorkItemData.dart';
 import 'package:sqflite_test/models/Epic.dart';
 import 'package:sqflite_test/utils/widget.dart';
 import 'add_epic_screen.dart';
-import '../utils/dummy_data.dart'; // Import the dummy data
 
 class EpicListScreen extends StatefulWidget {
   @override
@@ -18,16 +18,25 @@ class _EpicListScreenState extends State<EpicListScreen>
   Status? _selectedSortStatus;
   bool _isFilterExpanded = false;
   late AnimationController _animationController;
+  EpicDao _epicDao = EpicDao();
 
   @override
   void initState() {
     super.initState();
-    _epics = DummyData.getDummyEpics();
-    _workItemData = _epics.map((epic) => epic.toWorkItemData()).toList();
+    _loadEpics(); // Call the asynchronous method here
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 250),
     );
+  }
+
+  // Asynchronous method to load epics from the database
+  Future<void> _loadEpics() async {
+    List<Epic> epics = await _epicDao.getAllEpics();
+    setState(() {
+      _epics = epics;
+      _workItemData = _epics.map((epic) => epic.toWorkItemData()).toList();
+    });
   }
 
   @override
@@ -109,7 +118,10 @@ class _EpicListScreenState extends State<EpicListScreen>
                             .map<DropdownMenuItem<Status>>((Status value) {
                           return DropdownMenuItem<Status>(
                             value: value,
-                            child: Text(value.toString().split('.').last),
+                            child: Text(value
+                                .toString()
+                                .split('.')
+                                .last),
                           );
                         }).toList(),
                       ],
@@ -117,6 +129,7 @@ class _EpicListScreenState extends State<EpicListScreen>
                   ),
                 ),
                 FloatingActionButton(
+                  heroTag: "filterButton", // Add a unique heroTag here
                   onPressed: _toggleFilterVisibility,
                   child: AnimatedIcon(
                     icon: AnimatedIcons.menu_close,
@@ -131,13 +144,23 @@ class _EpicListScreenState extends State<EpicListScreen>
             bottom: 16.0, // Adjust position as needed
             right: 16.0,
             child: FloatingActionButton(
+              heroTag: "addEpicButton", // Add a unique heroTag here
               onPressed: () {
+                // In the EpicListScreen, where you navigate to AddEpicScreen:
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddEpicScreen()),
-                ).then((newEpic) {
-                  if (newEpic != null && newEpic is Epic) {
-                    _addEpic(newEpic);
+                ).then((result) {
+                  if (result != null && result is int) {
+                    // Epic was added successfully, and 'result' is the new epicId
+                    int newEpicId = result;
+                    print('New epic added with ID: $newEpicId');
+                    // Do something with the new epic ID, e.g., update the UI
+                    _loadEpics();
+                  } else {
+                    // There was an error adding the epic
+                    print('Error adding epic');
+                    // Handle the error, e.g., show an error message to the user
                   }
                 });
               },

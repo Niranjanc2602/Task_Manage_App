@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_test/constants/Status.dart';
+import 'package:sqflite_test/dao/Epic_dao.dart';
+import 'package:sqflite_test/dao/UserStory_dao.dart';
 import 'package:sqflite_test/models/UserStory.dart';
 import 'package:sqflite_test/models/WorkItemData.dart';
 import 'package:sqflite_test/screens/add_note_screen.dart';
@@ -28,17 +30,30 @@ class _EpicDetailScreenState extends State<EpicDetailScreen> {
   List<UserStory> _userStories = [];
   List<WorkItemData> _workItemData = [];
   Status? _selectedSortStatus;
+  final EpicDao _epicDao = EpicDao();
+  final UserStoryDao _userStoryDao = UserStoryDao();
+  DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
     epic = widget.epic;
-    _userStories = DummyData.getDummyUserStories(epic.id!);
-    _workItemData = _userStories.map((userStory) => userStory.toWorkItemData()).toList();
+    _loadUserStories();
     _nameController = TextEditingController(text: epic.name);
     _descriptionController = TextEditingController(text: epic.description);
     _priorityController = TextEditingController(text: epic.priority.toString());
     _selectedStatus = epic.status!;
+    _selectedDate = epic.endDate;
+  }
+
+  Future<void> _loadUserStories() async {
+    List<UserStory> userStories =
+    await _userStoryDao.getUserStoriesByEpicId(epic.id!);
+    setState(() {
+      _userStories = userStories;
+      _workItemData =
+          _userStories.map((userStory) => userStory.toWorkItemData()).toList();
+    });
   }
 
   @override
@@ -49,16 +64,36 @@ class _EpicDetailScreenState extends State<EpicDetailScreen> {
     super.dispose();
   }
 
-  void _updateForm() {
+  void _updateForm() async {
     if (_formKey.currentState!.validate()) {
       final updatedEpic = Epic(
         id: epic.id,
         name: _nameController.text,
         description: _descriptionController.text,
         status: _selectedStatus,
-        priority: 0,
+        priority: int.tryParse(_priorityController.text) ?? 0,
+        endDate: _selectedDate,
       );
-      Navigator.pop(context, updatedEpic);
+      try {
+        await _epicDao.update(updatedEpic);
+        Navigator.pop(context, updatedEpic);
+      } catch (e) {
+        print('Error updating epic: $e');
+        Navigator.pop(context, null);
+      }
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: _selectedDate ?? DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2025));
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
     }
   }
 
@@ -130,9 +165,10 @@ class _EpicDetailScreenState extends State<EpicDetailScreen> {
                   Text('Due Date: ${epic.endDate}'),
                   SizedBox(height: 10),
                   Container(
-                    width: MediaQuery.sizeOf(context).width / 1.5,
                     constraints: BoxConstraints(
-                        minHeight: MediaQuery.sizeOf(context).height / 9),
+                        minHeight: MediaQuery.sizeOf(context).height / 9,
+                      minWidth: MediaQuery.sizeOf(context).width / 1.5
+                    ),
                     color: Colors.amber,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +186,7 @@ class _EpicDetailScreenState extends State<EpicDetailScreen> {
                                         builder: (context) =>
                                             AddUserStoryScreen(
                                                 epicId: epic.id!)),
-                                  );
+                                  ).then((value) => _loadUserStories());
                                 },
                                 child: Text("Create User Story")),
                           ],

@@ -1,7 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_test/database/database_helper.dart';
 import 'package:sqflite_test/models/Epic.dart';
-// import 'package:sqflite_test/utils/database_helper.dart';
 
 class EpicDao {
   final dbHelper = DatabaseHelper.instance;
