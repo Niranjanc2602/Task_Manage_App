@@ -219,7 +219,7 @@ class _UserStoryDetailScreenState extends State<UserStoryDetailScreen> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             AddNoteScreen(
-                                                epicId: userStory.Id!)),
+                                                epicId: userStory.EpiId, userStoryId: userStory.Id!)),
                                   );
                                 },
                                 child: Text("Add Note")),

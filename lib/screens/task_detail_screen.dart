@@ -159,7 +159,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           AddNoteScreen(
-                                              epicId: task.Id!)),
+                                              epicId: task.EpicId ,  userStoryId: task.UserStoryId ,taskId: task.Id!)),
                                 );
                               },
                               child: Text("Add Note")),
