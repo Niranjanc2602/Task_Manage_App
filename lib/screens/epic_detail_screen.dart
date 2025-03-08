@@ -186,7 +186,15 @@ class _EpicDetailScreenState extends State<EpicDetailScreen> {
                                         builder: (context) =>
                                             AddUserStoryScreen(
                                                 epicId: epic.id!)),
-                                  ).then((value) => _loadUserStories());
+                                  ).then((result) {
+                                    if (result != null && result is int) {
+                                      int newUserStoryId = result;
+                                      print('New user story added with ID: $newUserStoryId');
+                                      _loadUserStories();
+                                    } else {
+                                      print('Error adding user story');
+                                    }
+                                  });
                                 },
                                 child: Text("Create User Story")),
                           ],
@@ -202,7 +210,6 @@ class _EpicDetailScreenState extends State<EpicDetailScreen> {
                                               AddNoteScreen(
                                                   epicId: epic.id!)),
                                     );
-
                                 }, child: Text("Add Note")),
                             ElevatedButton(
                                 onPressed: () {

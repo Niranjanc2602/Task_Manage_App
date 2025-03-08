@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_test/constants/Status.dart';
+import 'package:sqflite_test/dao/Task_dao.dart';
 import 'package:sqflite_test/models/Task.dart';
 import 'package:sqflite_test/screens/add_note_screen.dart';
 import 'package:sqflite_test/screens/view_notes_screen.dart';
@@ -21,6 +22,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   late final TextEditingController _priorityController;
   late Status _selectedStatus;
   Status? _selectedSortStatus;
+  final TaskDao _taskDao = TaskDao();
 
   @override
   void initState() {
@@ -29,7 +31,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     _nameController = TextEditingController(text: task.name);
     _descriptionController = TextEditingController(text: task.description);
     _priorityController = TextEditingController(text: task.priority.toString());
-    _selectedStatus = task.status!;
+    _selectedStatus = task.status;
   }
 
   @override
@@ -40,20 +42,25 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     super.dispose();
   }
 
-  void _updateForm() {
+  void _updateForm() async {
     if (_formKey.currentState!.validate()) {
       final updatedTask = Task(
         Id: task.Id,
         name: _nameController.text,
         description: _descriptionController.text,
         status: _selectedStatus,
-        priority: 0,
+        priority: int.tryParse(_priorityController.text) ?? 0,
         UserStoryId: task.UserStoryId,
         dateTime: task.dateTime,
-          EpicId: task.EpicId,
-
+        EpicId: task.EpicId,
       );
-      Navigator.pop(context, updatedTask);
+      try {
+        await _taskDao.update(updatedTask);
+        Navigator.pop(context, updatedTask);
+      } catch (e) {
+        print('Error updating task: $e');
+        Navigator.pop(context, null);
+      }
     }
   }
 
@@ -89,10 +96,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       _selectedStatus = newValue!;
                     });
                   },
-                  items: Status.values.map<DropdownMenuItem<Status>>((Status value) {
+                  items: Status.values
+                      .map<DropdownMenuItem<Status>>((Status value) {
                     return DropdownMenuItem<Status>(
                       value: value,
-                      child: Text(value.toString().split('.').last),
+                      child: Text(value
+                          .toString()
+                          .split('.')
+                          .last),
                     );
                   }).toList(),
                   decoration: InputDecoration(labelText: 'Status'),
@@ -106,14 +117,27 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 TextFormField(
                   controller: _priorityController,
                   decoration: InputDecoration(labelText: 'Priority'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a priority';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: 10),
                 Text('Due Date: ${task.dateTime}'),
                 SizedBox(height: 10),
                 Container(
-                  width: MediaQuery.sizeOf(context).width / 1.5,
+                  width: MediaQuery
+                      .sizeOf(context)
+                      .width / 1.5,
                   constraints: BoxConstraints(
-                      minHeight: MediaQuery.sizeOf(context).height / 9),
+                      minHeight: MediaQuery
+                          .sizeOf(context)
+                          .height / 9),
                   color: Colors.amber,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +146,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       Row(
                         children: [
                           ElevatedButton(
-                              onPressed: _updateForm, child: Text("Update")),
+                              onPressed: _updateForm,
+                              child: Text("Update")),
                         ],
                       ),
                       Row(
@@ -136,7 +161,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                           AddNoteScreen(
                                               epicId: task.Id!)),
                                 );
-                              }, child: Text("Add Note")),
+                              },
+                              child: Text("Add Note")),
                           ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
@@ -146,7 +172,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                           ViewNotesScreen(
                                               epicId: task.Id!)),
                                 );
-                              }, child: Text("View Notes"))
+                              },
+                              child: Text("View Notes"))
                         ],
                       ),
                     ],

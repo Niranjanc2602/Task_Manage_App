@@ -30,10 +30,8 @@ class UserStory{
       'id': Id,
       'name': name,
       'description': description,
-      'epic_id': EpiId,
-      'depend_epic_id': dependEpicId,
-      'depend_user_story_id': dependUserStoryId,
-      'date_time': dateTime?.toIso8601String(),
+      'EpiId': EpiId,
+      'datetime': dateTime?.toIso8601String(),
       'status': status.toString(),
       'priority': priority,
     };
@@ -44,9 +42,9 @@ class UserStory{
       Id: map['id'],
       name: map['name'],
       description: map['description'],
-      EpiId: map['epic_id'],
-      dependEpicId: map['depend_epic_id'],
-      dependUserStoryId: map['depend_user_story_id'],
+      EpiId: map['EpiId'],
+      dependEpicId: 0,
+      dependUserStoryId: 0,
       dateTime: map['date_time'] != null
           ? DateTime.parse(map['date_time'])
           : null,

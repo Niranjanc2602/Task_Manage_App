@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/task.dart';
+import 'package:sqflite_test/dao/Task_dao.dart';
 import 'package:sqflite_test/constants/Status.dart';
-
+import 'package:sqflite_test/models/Task.dart'; // Import TaskDao
 
 class AddTaskScreen extends StatefulWidget {
   final int userStoryId;
@@ -17,6 +17,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final TaskDao _taskDao = TaskDao(); // Create a TaskDao instance
 
   @override
   void dispose() {
@@ -25,14 +26,28 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     super.dispose();
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final task = Task(
         name: _nameController.text,
         description: _descriptionController.text,
-        status: Status.todo, EpicId: widget.epicId, UserStoryId: widget.userStoryId, priority: 0
+        status: Status.todo,
+        EpicId: widget.epicId,
+        UserStoryId: widget.userStoryId,
+        priority: 0,
       );
-      Navigator.pop(context, task);
+
+      try {
+        // Insert the task into the database
+        int taskId = await _taskDao.insert(task);
+        // If the insertion is successful, pop the screen with the new task's ID
+        Navigator.pop(context, taskId);
+      } catch (e) {
+        // Handle database insertion errors
+        print('Error inserting task: $e');
+        // You might want to show an error message to the user here
+        Navigator.pop(context, null); // Pop with null to indicate an error
+      }
     }
   }
 

@@ -51,13 +51,29 @@ Widget ListDisplayWidget(BuildContext context, List<WorkItemData> workItemDataLi
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>  UserStoryDetailScreen(userStory: userStory)));
+                            builder: (context) =>  UserStoryDetailScreen(userStory: userStory))
+                      ).then ((updatedUserStory) {
+                        if (updatedUserStory != null && updatedUserStory is UserStory) {
+                          final updatedItemDate = updatedUserStory.toWorkItemData();
+                          setState(() {
+                            workItemDataList[index] = updatedItemDate;
+                          });
+                        }
+                      });
                     } else{
                       Task? task = workItem.toTask();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>  TaskDetailScreen(task: task)));
+                            builder: (context) =>  TaskDetailScreen(task: task))
+                      ).then ((updatedTask) {
+                        if (updatedTask != null && updatedTask is Task) {
+                          final updatedItemDate = updatedTask.toWorkItemData();
+                          setState(() {
+                            workItemDataList[index] = updatedItemDate;
+                          });
+                        }
+                      });
                     }
                   },
                 ),

@@ -35,7 +35,7 @@ class UserStoryDao {
     Database db = await dbHelper.database;
     final List<Map<String, dynamic>> maps = await db.query(
       'user_stories',
-      where: 'epic_id = ?',
+      where: 'EpiId = ?',
       whereArgs: [epicId],
     );
     return List.generate(maps.length, (i) {

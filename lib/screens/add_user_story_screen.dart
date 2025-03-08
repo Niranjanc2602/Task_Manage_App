@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/UserStory.dart';
+import 'package:sqflite_test/dao/UserStory_dao.dart';
 import 'package:sqflite_test/constants/Status.dart';
+import 'package:sqflite_test/models/UserStory.dart';
 
 class AddUserStoryScreen extends StatefulWidget {
   final int epicId;
@@ -15,6 +16,7 @@ class _AddUserStoryScreenState extends State<AddUserStoryScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final UserStoryDao _userStoryDao = UserStoryDao(); // Create a UserStoryDao instance
 
   @override
   void dispose() {
@@ -23,15 +25,27 @@ class _AddUserStoryScreenState extends State<AddUserStoryScreen> {
     super.dispose();
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final userStory = UserStory(
         name: _nameController.text,
-        description: _descriptionController.text, EpiId: widget.epicId,
+        description: _descriptionController.text,
+        EpiId: widget.epicId,
         status: Status.todo,
-        priority: 0
+        priority: 0,
       );
-      Navigator.pop(context, userStory);
+
+      try {
+        // Insert the user story into the database
+        int userStoryId = await _userStoryDao.insert(userStory);
+        // If the insertion is successful, pop the screen with the new user story's ID
+        Navigator.pop(context, userStoryId);
+      } catch (e) {
+        // Handle database insertion errors
+        print('Error inserting user story: $e');
+        // You might want to show an error message to the user here
+        Navigator.pop(context, null); // Pop with null to indicate an error
+      }
     }
   }
 
