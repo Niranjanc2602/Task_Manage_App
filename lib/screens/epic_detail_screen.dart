@@ -218,7 +218,7 @@ class _EpicDetailScreenState extends State<EpicDetailScreen> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             ViewNotesScreen(
-                                                epicId: epic.id!)),
+                                                epicId: epic.id!, userStoryId: null, taskId: null)),
                                   );
                                 }, child: Text("View Reason"))
                           ],

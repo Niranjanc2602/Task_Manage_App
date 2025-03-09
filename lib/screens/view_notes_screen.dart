@@ -4,15 +4,17 @@ import 'package:sqflite_test/models/Note.dart';
 
 class ViewNotesScreen extends StatefulWidget {
   final int epicId;
+  final int? userStoryId;
+  final int? taskId;
 
-  const ViewNotesScreen({super.key, required this.epicId});
+  const ViewNotesScreen({super.key, required this.epicId, this.userStoryId, this.taskId});
 
   @override
   State<ViewNotesScreen> createState() => _ViewNotesScreenState();
 }
 
 class _ViewNotesScreenState extends State<ViewNotesScreen> {
-  final NoteDao _noteDao = NoteDao(); // Create a NoteDao instance
+  final NoteDao _noteDao = NoteDao();
   List<Note> _notes = [];
 
   @override
@@ -22,7 +24,16 @@ class _ViewNotesScreenState extends State<ViewNotesScreen> {
   }
 
   Future<void> _loadNotes() async {
-    List<Note> notes = await _noteDao.getNotesByEpicId(widget.epicId);
+    List<Note> notes = [];
+
+    if (widget.taskId != null) {
+      notes = await _noteDao.getNotesByTaskId(widget.taskId!);
+    } else if (widget.userStoryId != null) {
+      notes = await _noteDao.getNotesByUserStoryId(widget.userStoryId!);
+    } else {
+      notes = await _noteDao.getNotesByEpicId(widget.epicId);
+    }
+
     setState(() {
       _notes = notes;
     });

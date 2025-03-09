@@ -35,7 +35,31 @@ class NoteDao {
     Database db = await dbHelper.database;
     final List<Map<String, dynamic>> maps = await db.query(
       'notes',
-      where: 'epic_id = ?',
+      where: 'epicId = ?',
+      whereArgs: [epicId],
+    );
+    return List.generate(maps.length, (i) {
+      return Note.fromMap(maps[i]);
+    });
+  }
+
+  Future<List<Note>> getNotesByUserStoryId(int epicId) async {
+    Database db = await dbHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'notes',
+      where: 'userStoryId = ?',
+      whereArgs: [epicId],
+    );
+    return List.generate(maps.length, (i) {
+      return Note.fromMap(maps[i]);
+    });
+  }
+
+  Future<List<Note>> getNotesByTaskId(int epicId) async {
+    Database db = await dbHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'notes',
+      where: 'taskId = ?',
       whereArgs: [epicId],
     );
     return List.generate(maps.length, (i) {

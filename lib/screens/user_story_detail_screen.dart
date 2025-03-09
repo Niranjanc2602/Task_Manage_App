@@ -230,7 +230,7 @@ class _UserStoryDetailScreenState extends State<UserStoryDetailScreen> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             ViewNotesScreen(
-                                                epicId: userStory.Id!)),
+                                                epicId: userStory.EpiId, userStoryId: userStory.Id!, taskId: null)),
                                   );
                                 },
                                 child: Text("View Notes"))
